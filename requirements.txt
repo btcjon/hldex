@@ -3,3 +3,4 @@ hyperliquid-python-sdk
 python-dotenv
 msgpack
 web3
+gunicorn
