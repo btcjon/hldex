@@ -1,3 +1,2 @@
-*.hl*
+*hldex*
 .env
-*hyperliquid-python-sdk*
