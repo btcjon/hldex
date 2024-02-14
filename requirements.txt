@@ -4,3 +4,4 @@ python-dotenv
 msgpack
 web3
 gunicorn
+requests
