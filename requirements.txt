@@ -3,6 +3,7 @@ hyperliquid-python-sdk
 python-dotenv
 gunicorn
 typing-extensions
+msgpack
 bitarray==2.7.6 ; python_version >= "3.7" and python_version < "4"
 cached-property==1.5.2 ; python_version >= "3.7" and python_version < "3.8"
 certifi==2023.5.7 ; python_version >= "3.7" and python_version < "4.0"
