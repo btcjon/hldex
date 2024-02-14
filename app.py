@@ -23,34 +23,38 @@ address, info, exchange = example_utils.setup(api_url, skip_ws=True)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    # Assuming the data is sent as plain text in the body of the POST request
-    data = request.data.decode('utf-8')  # Decode the byte string to a normal string
-    parsed_data = parse_qs(data.replace(',', '&'))  # Replace commas with & and parse as a query string
+    data = request.data.decode('utf-8')
+    parsed_data = parse_qs(data.replace(',', '&'))
 
-    # Extract values and convert lists to single values
     command = parsed_data.get('command', [None])[0]
     symbol = parsed_data.get('symbol', [None])[0]
     quantity = parsed_data.get('qty', [None])[0]
 
+    # Debugging: Print the symbol before modification
+    print(f"Original symbol: {symbol}")
+
+    if symbol and symbol.endswith("USD"):
+        symbol = symbol[:-3]
+
+    # Debugging: Print the symbol after modification
+    print(f"Modified symbol: {symbol}")
+
     if command and symbol and quantity:
         if command == "buy" or command == "sell":
             is_buy = command == "buy"
-            print(f"We try to Market {'Buy' if is_buy else 'Sell'} {quantity} {symbol}.")
-            # Assuming market_open is a method to place orders
             order_result = exchange.market_open(symbol, is_buy, float(quantity), None, 0.01)
         elif command == "close":
-            print(f"We try to Market Close all {symbol}.")
-            # Assuming `market_close` is a method to close all positions for a symbol
             order_result = exchange.market_close(symbol)
         else:
             return jsonify({"error": "Invalid command"}), 400
 
-        if order_result["status"] == "ok":
-            # Handle success, similar to your existing code
+        # Check if order_result is not None before accessing it
+        if order_result and order_result.get("status") == "ok":
             return jsonify({"status": "success", "details": "Order executed"}), 200
         else:
-            # Handle failure, similar to your existing code
-            return jsonify({"status": "error", "details": "Order failed"}), 500
+            # Handle cases where order_result is None or status is not "ok"
+            error_details = order_result.get("details", "Unknown error") if order_result else "No response from exchange"
+            return jsonify({"status": "error", "details": error_details}), 500
     else:
         return jsonify({"error": "Missing or invalid parameters"}), 400
 
