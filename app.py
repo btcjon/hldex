@@ -1,9 +1,13 @@
+import logging
 from flask import Flask, request, jsonify
 import os
 from urllib.parse import parse_qs
 from dotenv import load_dotenv
 from hyperliquid.utils import constants
 import example_utils
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
@@ -47,6 +51,13 @@ def webhook():
             order_result = exchange.market_close(symbol)
         else:
             return jsonify({"error": "Invalid command"}), 400
+
+        # After receiving the order_result from the exchange
+        if order_result:
+            # Log the entire response
+            logging.info(f"Exchange response: {order_result}")
+        else:
+            logging.error("No response received from exchange")
 
         # Check if order_result is not None before accessing it
         if order_result and order_result.get("status") == "ok":
