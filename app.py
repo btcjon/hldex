@@ -54,10 +54,16 @@ def webhook():
 
         # After receiving the order_result from the exchange
         if order_result:
-            # Log the entire response
-            logging.info(f"Exchange response: {order_result}")
+            # Check if there's an error in the response
+            if 'error' in order_result.get('response', {}).get('data', {}).get('statuses', [{}])[0]:
+                error_message = order_result['response']['data']['statuses'][0]['error']
+                logging.error(f"Exchange reported an error: {error_message}")
+                return jsonify({"status": "error", "details": error_message}), 400
+            else:
+                logging.info(f"Exchange response: {order_result}")
         else:
             logging.error("No response received from exchange")
+            return jsonify({"status": "error", "details": "No response from exchange"}), 500
 
         # Check if order_result is not None before accessing it
         if order_result and order_result.get("status") == "ok":
