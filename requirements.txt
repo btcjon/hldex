@@ -1,0 +1,5 @@
+Flask
+hyperliquid-python-sdk
+python-dotenv
+msgpack
+web3
